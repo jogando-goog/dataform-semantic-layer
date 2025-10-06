@@ -1,0 +1,5 @@
+config {
+    type: "declaration",
+    schema: "ecommerce_es",
+    name: "productos"
+}

@@ -1,0 +1,44 @@
+config {
+    type: "table",
+    schema: "ecommerce_es_consumption",
+    name: "clientes",
+    description: "Una vista analítica y limpia de los datos de clientes. Se excluyen los números de tarjeta de crédito por seguridad.",
+    columns: {
+        id_cliente: "Identificador único para cada cliente.",
+        nombre: "Nombre de pila del cliente.",
+        apellido: "Apellido o apellidos del cliente.",
+        email: "Dirección de correo electrónico única del cliente.",
+        numero_tarjeta_credito: {
+        descripcion: "Numero de tarjeta de credito",
+        bigqueryPolicyTags: [dataform.projectConfig.vars.highSecurityPolicyTag]
+        },
+        consumo_total: "Total consumido por el cliente",
+        segmento_cliente: "Segmento del cliente en base al consumo",
+        fecha_creacion: "Fecha y hora en que se registró el cliente en el sistema."
+    },
+    assertions: {
+        uniqueKey: ["id_cliente","email"],
+        nonNull: ["id_cliente"]
+    }
+}
+
+WITH consumo_por_cliente AS (
+  SELECT
+    id_cliente,
+    SUM(total_del_pedido) as total_por_cliente
+  FROM ${ref("ecommerce_es_consumption","pedidos")}
+  GROUP BY 1
+)
+SELECT
+  id as id_cliente, --arreglamos nombre columna
+  nom AS nombre,
+  apell AS apellido, --arreglamos nombre columna
+  email,
+  num_trjt as numero_tarjeta_credito, --arreglamos nombre columna,
+  cpc.total_por_cliente as consumo_total,
+  ${macros.segmento_cliente('cpc.total_por_cliente')} AS segmento_cliente,
+  fecha_creacion
+FROM
+  -- La función ref() crea una dependencia con la tabla fuente.
+  ${ref("ecommerce_es", "clientes")} as c
+LEFT JOIN consumo_por_cliente as cpc ON (c.id = cpc.id_cliente)

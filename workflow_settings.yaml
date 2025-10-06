@@ -1,0 +1,7 @@
+defaultProject: jo-sbx-dev
+defaultAssertionDataset: dataform_assertions
+defaultLocation: us-central1
+dataformCoreVersion: 3.0.26
+datasetSuffix: julian
+vars:
+  highSecurityPolicyTag: projects/jo-sbx-dev/locations/us-central1/taxonomies/4172776219908696585/policyTags/1557864613923840465
