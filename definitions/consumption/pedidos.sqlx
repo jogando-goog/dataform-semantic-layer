@@ -1,0 +1,49 @@
+config {
+    type: "view",
+    schema: "ecommerce_es_consumption",
+    name: "pedidos",
+    description: "Vista de las cabeceras de todos los pedidos de clientes. Contiene información clave como el cliente que realizó el pedido, la fecha y su estado actual.",
+    columns: {
+        id_pedido: "Identificador único del pedido.",
+        id_cliente: "Identificador único del cliente que realizó el pedido.",
+        fecha_pedido: "Fecha y hora en que se realizó el pedido.",
+        estado: "Estado actual del pedido (ej. pendiente, enviado, entregado).",
+        items: {
+            "description": "Array que contiene los detalles de cada producto incluido en el pedido.",
+            "columns": {
+                "id_item": "Identificador único del item dentro del pedido.",
+                "id_producto": "Identificador único del producto.",
+                "cantidad": "Cantidad de unidades del producto solicitadas.",
+                "precio_por_unidad": "Precio de una sola unidad del producto en el momento de la compra."
+            }
+        },
+    total_pedido: "Total pedido"
+    } 
+}
+
+
+SELECT
+  p.id_pedido,
+  p.id_cliente,
+  p.fecha_pedido,
+  p.estado,
+  ARRAY_AGG(
+    STRUCT(
+      pi.id AS id_item,
+      pi.id_producto,
+      pi.cant as cantidad,
+      pi.p_por_unidad as precio_por_unidad
+    )
+  ) AS items,
+  sum(pi.cant * pi.p_por_unidad) as total_del_pedido
+FROM
+  ${ref("ecommerce_es","pedidos")} AS p
+LEFT JOIN
+  ${ref("pedido_items")} AS pi
+ON
+  p.id_pedido = pi.id_pedido
+GROUP BY
+  p.id_pedido,
+  p.id_cliente,
+  p.fecha_pedido,
+  p.estado

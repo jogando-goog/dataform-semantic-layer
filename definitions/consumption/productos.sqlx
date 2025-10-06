@@ -1,0 +1,24 @@
+config {
+    type: "view",
+    schema: "ecommerce_es_consumption", 
+    name: "productos",
+    description: "Vista de maestro de los productos",
+    columns: {
+        id_producto: "Identificador numérico único para cada producto.",
+        nombre: "Nombre comercial del producto.",
+        descripcion: "Descripción detallada de las características del producto.",
+        precio: "Precio de venta unitario del producto.",
+        cantidad_stock: "Número de unidades del producto actualmente disponibles en el inventario.",
+        fecha_creacion: "Fecha y hora en que el producto fue dado de alta en el sistema."
+    }
+}
+
+SELECT
+  id as id_producto,
+  nombre,
+  descripcion,
+  prec AS precio, -- Renombramos las columnas para que sean más claras en la capa analítica.
+  stock AS cantidad_stock,   -- Renombramos las columnas para que sean más claras en la capa analítica.
+  fecha_creacion
+FROM
+  ${ref("ecommerce_es", "productos")}
