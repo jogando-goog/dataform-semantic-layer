@@ -1,0 +1,21 @@
+config {
+    type: "view",
+    materialized: true,
+    schema: "ecommerce_es_consumption",
+    description: "Ventas mensuales por producto."
+}
+
+SELECT
+  TIMESTAMP_TRUNC(ped.fecha_pedido, MONTH) AS mes,
+  p.nombre AS nombre_producto,
+  SUM(pi.cant * pi.p_por_unidad) AS ingresos_totales
+FROM
+  ecommerce_es.pedido_items AS pi
+JOIN
+  ecommerce_es.pedidos AS ped
+  ON pi.id_pedido = ped.id_pedido
+JOIN
+  ecommerce_es.productos AS p
+  ON pi.id_producto = p.id
+GROUP BY
+  1, 2

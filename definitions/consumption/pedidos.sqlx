@@ -1,5 +1,5 @@
 config {
-    type: "view",
+    type: "incremental",
     schema: "ecommerce_es_consumption",
     name: "pedidos",
     description: "Vista de las cabeceras de todos los pedidos de clientes. Contiene información clave como el cliente que realizó el pedido, la fecha y su estado actual.",
@@ -19,6 +19,17 @@ config {
         },
     total_pedido: "Total pedido"
     } 
+}
+
+pre_operations {
+  DECLARE
+    insert_time_checkpoint DEFAULT (
+    ${
+        when(incremental(),
+            `SELECT COALESCE(MAX(fecha_pedido),CURRENT_TIMESTAMP()) FROM ${self()} WHERE fecha_pedido >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)`,
+            `SELECT TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)`)
+    }
+  );
 }
 
 
