@@ -23,7 +23,7 @@ config {
 
 pre_operations {
   DECLARE
-    insert_time_checkpoint DEFAULT (
+    fecha_checkpoint DEFAULT (
     ${
         when(incremental(),
             `SELECT COALESCE(MAX(fecha_pedido),CURRENT_TIMESTAMP()) FROM ${self()} WHERE fecha_pedido >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)`,
@@ -49,6 +49,7 @@ SELECT
   sum(pi.cant * pi.p_por_unidad) as total_del_pedido
 FROM
   ${ref("ecommerce_es","pedidos")} AS p
+WHERE fecha_pedido >= TIMESTAMP_SUB(fecha_checkpoint, INTERVAL 3 HOUR)
 LEFT JOIN
   ${ref("pedido_items")} AS pi
 ON
