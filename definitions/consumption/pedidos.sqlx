@@ -32,7 +32,6 @@ pre_operations {
   );
 }
 
-
 SELECT
   p.id_pedido,
   p.id_cliente,
