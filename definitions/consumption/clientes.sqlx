@@ -2,6 +2,7 @@ config {
     type: "table",
     schema: "ecommerce_es_consumption",
     name: "clientes",
+    tags: ["near-real-time"],
     description: "Una vista analítica y limpia de los datos de clientes. Se excluyen los números de tarjeta de crédito por seguridad.",
     columns: {
         id_cliente: "Identificador único para cada cliente.",
