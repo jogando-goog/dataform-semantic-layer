@@ -48,11 +48,11 @@ SELECT
   sum(pi.cant * pi.p_por_unidad) as total_del_pedido
 FROM
   ${ref("ecommerce_es","pedidos")} AS p
-WHERE fecha_pedido >= TIMESTAMP_SUB(fecha_checkpoint, INTERVAL 3 HOUR)
 LEFT JOIN
   ${ref("pedido_items")} AS pi
 ON
   p.id_pedido = pi.id_pedido
+WHERE fecha_pedido >= TIMESTAMP_SUB(fecha_checkpoint, INTERVAL 3 HOUR)
 GROUP BY
   p.id_pedido,
   p.id_cliente,
